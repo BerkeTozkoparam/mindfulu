@@ -12,6 +12,7 @@ import {
   CrisisModal,
   Sidebar,
   WelcomeScreen,
+  SplashScreen,
 } from '@/components'
 import { Message, Conversation } from '@/types'
 import { storage } from '@/lib/storage'
@@ -25,6 +26,7 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isCrisisModalOpen, setIsCrisisModalOpen] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
+  const [showSplash, setShowSplash] = useState(true)
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -42,6 +44,13 @@ export default function Home() {
     }
 
     setIsInitialized(true)
+
+    // Hide splash screen after animation
+    const timer = setTimeout(() => {
+      setShowSplash(false)
+    }, 2500)
+
+    return () => clearTimeout(timer)
   }, [])
 
   // Scroll to bottom on new messages
@@ -184,18 +193,12 @@ export default function Home() {
     storage.setCurrentChatId(null)
   }
 
-  if (!isInitialized) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse">
-          <Logo className="w-16 h-16" />
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-background flex">
+    <>
+      {/* Splash Screen */}
+      <SplashScreen isVisible={showSplash} />
+
+      <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <Sidebar
         isOpen={isSidebarOpen}
@@ -277,5 +280,6 @@ export default function Home() {
         onClose={() => setIsCrisisModalOpen(false)}
       />
     </div>
+    </>
   )
 }
